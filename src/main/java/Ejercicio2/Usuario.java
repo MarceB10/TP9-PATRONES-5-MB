@@ -1,8 +1,7 @@
 package Ejercicio2;
 
-public enum Permiso {
-    ADMIN, BASICO, INTERMEDIO
-}
+import java.util.List;
+
 public class Usuario {
     private String name;
     private List<Permiso> permisos;
@@ -12,5 +11,9 @@ public class Usuario {
     }
     public boolean poseePermiso(Permiso permiso) {
         return permisos.stream().anyMatch(p -> p.equals(permiso));
+    }
+
+    public String miNombre(){
+        return this.name;
     }
 }

@@ -19,11 +19,11 @@ public class Persona {
         return nombre;
     }
 
-    public Collection<Object> getTelefonos() {
+    public Set<Telefono> getTelefonos() {
         return telefonos;
     }
 
-    public void setTelefonos(Collection<Object> telefonos) {
+    public void setTelefonos(Set<Telefono> telefonos) {
         this.telefonos = telefonos;
     }
 }

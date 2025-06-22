@@ -1,5 +1,7 @@
 package Ejercicio2;
 
+import java.io.IOException;
+
 public class FileAccesProxy extends FileAcces{
     private Usuario usuario;
 

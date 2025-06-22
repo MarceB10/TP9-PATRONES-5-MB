@@ -1,96 +1,114 @@
 package Ejercicio1;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.sql.*;
+import java.util.*;
 
 public class TelefonoSetProxy implements Set<Telefono> {
-    private Set<Telefono> telefonos;
+    private final int idPersona;
+    private final Connection conn;
+    private Set<Telefono> telefonosReales;
     private boolean cargado = false;
-    private String personaNombre;
 
-    public TelefonoSetProxy(String personaNombre) {
-        this.personaNombre = personaNombre;
+    public TelefonoSetProxy(int idPersona, Connection conn) {
+        this.idPersona = idPersona;
+        this.conn = conn;
     }
 
-    private void cargarTelefonoSiEsNecesario(){
-        if(!cargado){
-            System.out.println("Cargando telefonos de " + personaNombre);
-            telefonos = simularConsultaTelefonosDesdeBD(personaNombre);
-            cargado = true;
+    private void cargarTelefonos() {
+        if (!cargado) {
+            telefonosReales = new HashSet<>();
+            String sql = "SELECT numero FROM telefonos WHERE idpersona = ?";
+
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, idPersona);
+                ResultSet rs = stmt.executeQuery();
+
+                while (rs.next()) {
+                    telefonosReales.add(new Telefono(rs.getString("numero")));
+                }
+                cargado = true;
+            } catch (SQLException e) {
+                throw new RuntimeException("Error al cargar teléfonos para persona " + idPersona, e);
+            } finally {
+                try {
+                    if (conn != null) conn.close();
+                } catch (SQLException e) {
+                    System.err.println("Error al cerrar conexión: " + e.getMessage());
+                }
+            }
         }
     }
 
-    private Set<Telefono> simularConsultaTelefonosDesdeBD(String nombre) {
-        Set<Telefono> data = new HashSet<>();
-        data.add(new Telefono("2984123456"));
-        data.add(new Telefono("2984123457"));
-        return data;
-    }
-
+    // Implementación completa de los métodos de Set
     @Override
     public int size() {
-        return 0;
+        cargarTelefonos();
+        return telefonosReales.size();
     }
 
     @Override
     public boolean isEmpty() {
-        return false;
+        cargarTelefonos();
+        return telefonosReales.isEmpty();
     }
 
     @Override
     public boolean contains(Object o) {
-        return false;
+        cargarTelefonos();
+        return telefonosReales.contains(o);
     }
 
     @Override
     public Iterator<Telefono> iterator() {
-        return null;
+        cargarTelefonos();
+        return telefonosReales.iterator();
     }
 
     @Override
     public Object[] toArray() {
-        return new Object[0];
+        cargarTelefonos();
+        return telefonosReales.toArray();
     }
 
     @Override
     public <T> T[] toArray(T[] a) {
-        return null;
+        cargarTelefonos();
+        return telefonosReales.toArray(a);
     }
 
     @Override
     public boolean add(Telefono telefono) {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean remove(Object o) {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        return false;
+        cargarTelefonos();
+        return telefonosReales.containsAll(c);
     }
 
     @Override
     public boolean addAll(Collection<? extends Telefono> c) {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void clear() {
-
+        throw new UnsupportedOperationException();
     }
 }
